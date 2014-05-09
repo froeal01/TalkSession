@@ -6,6 +6,7 @@ var path = require('path');
 var index = require('./routes/index.js');
 var events = require('./routes/events.js');
 var app = express();
+var helpers = require('express-helpers');
 
 
 // ** for all environments **//
@@ -25,7 +26,7 @@ app.use(partials());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 app.enable('trust proxy');
-
+helpers(app);	
 // development only
 
 if ('development' === app.get('env')){
@@ -40,7 +41,7 @@ app.get('/', index.index);
 
 // calendar index
 app.get('/events',events.index);
-app.get('/events/:date', events.new);
+app.get('/events/:date', events.show);
 
 
 http.createServer(app).listen(app.get('port'), function(){
