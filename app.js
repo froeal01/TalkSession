@@ -4,6 +4,7 @@ var partials = require('express-partials');
 var http = require('http');
 var path = require('path');
 var index = require('./routes/index.js');
+var events = require('./routes/events.js');
 var app = express();
 
 
@@ -36,6 +37,11 @@ if ('development' === app.get('env')){
 
 // index
 app.get('/', index.index);
+
+// calendar index
+app.get('/events',events.index);
+app.get('/events/:date', events.new);
+
 
 http.createServer(app).listen(app.get('port'), function(){
 	console.log('Express server listening on port' + app.get('port'));
