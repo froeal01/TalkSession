@@ -1,9 +1,11 @@
 //** Module Dependencies. **//
 var express = require('express');
+var partials = require('express-partials');
 var http = require('http');
 var path = require('path');
 var index = require('./routes/index.js');
 var app = express();
+
 
 // ** for all environments **//
 
@@ -18,6 +20,7 @@ app.use(express.cookieParser('your secret here'));
 app.use(express.cookieSession());
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+app.use(partials());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 app.enable('trust proxy');
