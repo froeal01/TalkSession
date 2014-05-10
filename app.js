@@ -5,9 +5,10 @@ var http = require('http');
 var path = require('path');
 var index = require('./routes/index.js');
 var events = require('./routes/events.js');
+var sessions = require('./routes/sessions.js');
 var app = express();
 var helpers = require('express-helpers');
-
+var admin =  require("./routes/admin.js");
 
 // ** for all environments **//
 
@@ -42,6 +43,15 @@ app.get('/', index.index);
 // calendar index
 app.get('/events',events.index);
 app.get('/events/:date', events.show);
+
+
+// sessions
+app.post('/', sessions.create);
+
+
+//** admin path **//
+app.get('/admins/home', admin.home);
+
 
 
 http.createServer(app).listen(app.get('port'), function(){

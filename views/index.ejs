@@ -1,6 +1,6 @@
 <div class="uk-panel uk-panel-box-secondary">
 	<form class = "uk-form", name="login", action="/", method="POST">
-		<div class ="error_field"></div>
+			<% include shared/errors %>
 		<div class = "uk-form-row login_form">
 			<label for="email", name="email">Email</label>
 			<input type="text", id="email_login", placeholder="example@example.com", name="email">
