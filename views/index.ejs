@@ -1,1 +1,16 @@
-<h1> here </h1>
+<div class="uk-panel uk-panel-box-secondary">
+	<form class = "uk-form", name="login", action="/", method="POST">
+		<div class ="error_field"></div>
+		<div class = "uk-form-row login_form">
+			<label for="email", name="email">Email</label>
+			<input type="text", id="email_login", placeholder="example@example.com", name="email">
+		</div>
+		<div class = "uk-form-row login_form">
+			<label for="password", name="password">Password</label>
+			<input type="password", id="password_login", name="password">
+		</div>
+		<div class = "uk-form-row login_button">
+			<input type="submit" class= "uk-button uk-button-success">
+		</div>	
+	</form>
+</div>
