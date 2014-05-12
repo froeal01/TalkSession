@@ -9,3 +9,7 @@ exports.show = function (req, res){
 exports.new = function(req, res){
 	res.render('events/new');
 }
+
+exports.create = function(req,res){
+	
+}

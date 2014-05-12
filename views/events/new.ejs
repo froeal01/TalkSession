@@ -7,7 +7,13 @@
 	</div>
 
 	<div class="uk-width-1-2">
-
+		<form id= "time-table",class = "uk-form", action="/admins/events/new", method="POST">
+			<legend> Check Times for Selected Dates</legend> <!-- For MVP, values are hardcoded. In next version Admin will be able to customize times-->
+			<% include ../shared/checktime %>
+			<div class = "uk-form time-submit">
+				<input type="submit" class = "uk-button" id="time-submit" value = "Add times to schedule">
+			</div>
+		</form>	
 	</div>
 </div>
 
@@ -39,6 +45,21 @@
 		});
 
 
+
+
+		$("#time-table").submit(function(e){
+			e.preventDefault();
+			$("input[type=submit]").attr('disabled',true);
+			var checkedArray = new Array();
+			$("input[type='checkbox']:checked",this).each(function(){
+				checkedArray.push($(this).val());
+			})
+			processTimes(dateArray,checkedArray,handleResponse);
+		});
+
+
+
+
 		function checkIfHasBeenClicked(date,cb){
 			if($.inArray(date,dateArray) === -1){
 				cb(null,false);
@@ -51,6 +72,19 @@
 			dateArray = _.without(dateArray, date);
 			cb();
 		}
+
+
+		function processTimes(dateArray,timeArray,cb){
+		 $.post()
+		}
+
+	
+		var handleResponse = function(err,done){
+
+		}
+
+
+
 	});
 
 

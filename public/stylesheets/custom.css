@@ -5,3 +5,7 @@
 .date-selected{
 	background-color: red;
 }
+
+.time-checkbox{
+	margin-bottom: 5px;
+}
