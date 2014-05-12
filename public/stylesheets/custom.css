@@ -9,3 +9,11 @@
 .time-checkbox{
 	margin-bottom: 5px;
 }
+
+.message-field{
+	display: none;
+}
+
+.uk-navbar{
+	margin-bottom: 10px;
+}

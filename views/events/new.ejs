@@ -1,3 +1,6 @@
+<% include ../shared/admin_navbar %>
+<div class = "message-field uk-alert uk-alert-success"></div>
+
 <div class="uk-grid">
 	
 	<div class="uk-width-1-2">
@@ -7,7 +10,7 @@
 	</div>
 
 	<div class="uk-width-1-2">
-		<form id= "time-table",class = "uk-form", action="/admins/events/new", method="POST">
+		<form id= "time-table",class = "uk-form", action="/admins/events/new", method="POST"/>
 			<legend> Check Times for Selected Dates</legend> <!-- For MVP, values are hardcoded. In next version Admin will be able to customize times-->
 			<% include ../shared/checktime %>
 			<div class = "uk-form time-submit">
@@ -76,16 +79,32 @@
 
 		function processTimes(dateArray,timeArray,cb){
 		 var postRequest = $.post('/admins/events/new',{dates:dateArray,times:timeArray},function(data){
-		 	console.log(data);
+		 		if (data.error){
+		 			cb(data.error,null);
+		 		} else{
+		 			cb(null,"New Appointments Created");
+		 		}
 		 });
 		}
 
 	
 		var handleResponse = function(err,done){
-
+			if(err){
+				// show in error field
+			  $("input[type=submit]").attr('disabled',false);
+			} else {
+				$('.message-field').html(done).show();
+				$("input[type=submit]").attr('disabled',false);
+				successfullyCreate();
+			}
 		}
 
-
+		function successfullyCreate (){
+			console.log('here');
+			$('td').removeClass("date-selected");
+			$('input:checkbox').removeAttr('checked');
+			dateArray = [];
+		}
 
 	});
 
