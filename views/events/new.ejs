@@ -75,7 +75,9 @@
 
 
 		function processTimes(dateArray,timeArray,cb){
-		 $.post()
+		 var postRequest = $.post('/admins/events/new',{dates:dateArray,times:timeArray},function(data){
+		 	console.log(data);
+		 });
 		}
 
 	
