@@ -5,3 +5,7 @@ exports.index = function (req, res){
 exports.show = function (req, res){
 	res.render('events/show.ejs');
 }
+
+exports.new = function(req, res){
+	res.render('events/new');
+}

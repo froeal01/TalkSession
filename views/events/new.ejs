@@ -1,0 +1,59 @@
+<div class="uk-grid">
+	
+	<div class="uk-width-1-2">
+		<div class = "month-calendar">
+
+		</div>
+	</div>
+
+	<div class="uk-width-1-2">
+
+	</div>
+</div>
+
+
+<script>
+	$(function(){
+
+		$(".month-calendar").fullCalendar({
+
+		});
+	
+
+		var dateArray = new Array();
+
+		$(".fc-day").on("click", function(){
+			 var clickedBox = this
+			 var date = $(this).data("date");
+			 checkIfHasBeenClicked(date, function(err,result){
+				 	if (result == false){
+				 	 dateArray.push(date);
+				 	 $(clickedBox).addClass("date-selected");
+			 	} else {
+			 		 removeFromArray(date,function(){
+			 		 $(clickedBox).removeClass("date-selected");
+			 		});
+			 	}
+			 
+			 });
+		});
+
+
+		function checkIfHasBeenClicked(date,cb){
+			if($.inArray(date,dateArray) === -1){
+				cb(null,false);
+			} else {
+				cb(null,true);
+			}
+		}
+
+		function removeFromArray(date,cb){
+			dateArray = _.without(dateArray, date);
+			cb();
+		}
+	});
+
+
+
+
+</script>

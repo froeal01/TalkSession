@@ -1,3 +1,7 @@
 .times-div{
 	margin-top: 10px;
 }
+
+.date-selected{
+	background-color: red;
+}

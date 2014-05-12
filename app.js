@@ -52,7 +52,7 @@ app.post('/', sessions.create);
 
 //** admin path **//
 app.get('/admins/home', adminAuth, admin.home);
-
+app.get('/admins/events/new', adminAuth, events.new);
 
 
 http.createServer(app).listen(app.get('port'), function(){
