@@ -6,9 +6,10 @@ var path = require('path');
 var index = require('./routes/index.js');
 var events = require('./routes/events.js');
 var sessions = require('./routes/sessions.js');
+var adminAuth = require ('./middleware/adminAuth.js');
 var app = express();
 var helpers = require('express-helpers');
-var admin =  require("./routes/admin.js");
+var admin =  require("./routes/admins.js");
 
 // ** for all environments **//
 
@@ -50,7 +51,7 @@ app.post('/', sessions.create);
 
 
 //** admin path **//
-app.get('/admins/home', admin.home);
+app.get('/admins/home', adminAuth, admin.home);
 
 
 
