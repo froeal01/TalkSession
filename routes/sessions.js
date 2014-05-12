@@ -17,3 +17,9 @@ exports.create = function (req, res){
 	});
 
 };
+
+
+exports.delete = function (req,res){
+	req.session = null;
+	res.redirect('/'); //show message on index
+}

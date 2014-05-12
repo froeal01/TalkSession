@@ -48,6 +48,7 @@ app.get('/events/:date', events.show);
 
 // sessions
 app.post('/', sessions.create);
+app.get('/signout', sessions.delete);
 
 
 //** admin path **//
