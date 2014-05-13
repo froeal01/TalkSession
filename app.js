@@ -45,6 +45,7 @@ app.get('/', index.index);
 // calendar 
 app.get('/events',events.index);
 app.get('/events/:date', userAuth, events.show);
+app.post('/events/:date', userAuth, events.update);
 app.post('/events/dailyschedule', adminAuth, events.dailyschedule);
 app.post('/events/timeslots', userAuth, events.monthlyslots);
 

@@ -51,7 +51,7 @@ Appointment.showDailyTimes = function (date, cb){
 		if(err){
 			throw(err);//handleError better
 		}
-		client.query("select appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time from appointments where appointment_date = $1",[date],function(err,results){
+		client.query("select appointment_id, appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time from appointments where appointment_date = $1",[date],function(err,results){
 			done();
 			if(err){
 				throw(err);//handleError better

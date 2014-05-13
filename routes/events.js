@@ -9,7 +9,7 @@ exports.show = function (req, res){
 		if(err){
 			throw(err);
 		}
-		res.render('events/show.ejs', {availableTimes : results});
+		res.render('events/show.ejs', {availableTimes : results, date : req.params.date});
 	});
 }
 
@@ -25,6 +25,10 @@ exports.create = function(req,res){
 			res.send({message:status});
 		}
 	});
+}
+
+exports.update = function(req,res){
+	
 }
 
 exports.dailyschedule = function(req,res){
