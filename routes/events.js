@@ -21,3 +21,12 @@ exports.create = function(req,res){
 		}
 	});
 }
+
+exports.dailyschedule = function(req,res){
+	Appointment.getDailySchedule(req.session.userId,function(err,results){
+		if(err){
+			throw(err);
+		}
+		res.send({times:results});
+	});
+}

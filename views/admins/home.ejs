@@ -32,14 +32,26 @@
 
 <script>
 	$(function(){
-		var date = new Date ();	
-		var day = date.getDate();
-		var month = date.getMonth();
-		var year = date.getYear();
-
-		 $(".day-calendar").fullCalendar({
-		 		defaultView:'agendaDay'
-		 });	
-
+		var date = null
+		$.post('/events/dailyschedule', function(data){
+				var dailyTimes = $.map(data.times, function(session){
+					return {
+				 						id : session.appointmentId,
+				 						start : prettifyDate(session.appointmentDate,session.startTime),
+				 						end : prettifyDate(session.appointmentDate,session.endTime),
+				 						title : session.clientName == null ? "Open Slot" : session.clientName,
+				 						allDay : false
+		 						}
+				})
+				$(".day-calendar").fullCalendar({
+						defaultView:'agendaDay',
+		 				events: dailyTimes
+					});
 		});
+			
+		function prettifyDate(date,time){
+			var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/)
+			return formattedDate[1] + " " + time
+		}					
+ });
 </script>

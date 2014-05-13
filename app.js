@@ -41,10 +41,10 @@ if ('development' === app.get('env')){
 // index
 app.get('/', index.index);
 
-// calendar index
+// calendar 
 app.get('/events',events.index);
 app.get('/events/:date', events.show);
-
+app.post('/events/dailyschedule', adminAuth, events.dailyschedule);
 
 // sessions
 app.post('/', sessions.create);

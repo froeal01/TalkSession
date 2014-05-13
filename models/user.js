@@ -58,14 +58,6 @@ User.getAdminDashboard = function(adminId,cb) { //admin id passed for when multi
 		clientTimes: function(callback){
 			callback();
 		},
-		dailyTimes: function(callback){
-			getDailySchedule(adminId,null,function(err,dayEvents){
-				if(err){
-					callback(err);
-				}
-				callback(null,dayEvents)
-			});
-		},
 		appointmentConfirms: function(callback){
 			callback();
 		}
@@ -91,33 +83,17 @@ User.prototype.authenticate = function(password){
 	return this.password === password;
 }
 
-function getDailySchedule(adminId, date,cb){
- var date = date || today();
- pg.connect(config.dbString, function(err,client,done){
- 	if(err){
- 		throw(err);
- 	}
- 	client.query('select * from appointments where appointment_date = $1 AND created_by = $2', [date,parseInt(adminId)], function(err,results){
- 		if(err){
- 			throw(err) // handleError better
- 		}
- 		if(results.rowCount > 0){
- 			var values = results.rows.map(function(values){return new Appointment(values);});
- 			cb(null, values)
- 		} else {
- 			cb(null,"No scheduled appointments");
- 		}
- 	});
- });
-}
 
 
 
-function today(){
-	var today = new Date();
-	var year = today.getFullYear();
-	var month = today.getMonth() + 1;
-	var day = today.getDate()
-	return year.toString() + "-" + (month.toString().length ===2 ? month.toString() : "0" + month.toString()) + "-" + (day.toString().length ===2 ? day.toString() : "0" + day.toString())
-}
+// function earliestClientTimes (adminId,cb){ //adminId is passed to easily scale when more admins
+// 	pg.connect(config.dbString, function(err,client,done){
+// 		if(err){
+// 			throw(err);
+// 		}
+// 		client.query('select ')
+// 	});
+// }
+
+
 module.exports = User;

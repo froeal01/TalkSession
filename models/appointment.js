@@ -46,6 +46,34 @@ Appointment.create = function(dates,times,creatorId,cb){
  }
 }
 
+Appointment.getDailySchedule = function(adminId, cb){
+ var date = today();
+ pg.connect(config.dbString, function(err,client,done){
+ 	if(err){
+ 		throw(err); //handleError better
+ 	}
+ 	client.query('select * from appointments where appointment_date = $1 AND created_by = $2', [date,parseInt(adminId)], function(err,results){
+ 		done();
+ 		if(err){
+ 			throw(err) // handleError better
+ 		}
+ 		if(results.rowCount > 0){
+ 			var values = results.rows.map(function(values){return new Appointment(values);});
+ 			cb(null, values)
+ 		} else {
+ 			cb(null,"No scheduled appointments");
+ 		}
+ 	});
+ });
+}
 
+
+function today(){
+	var today = new Date();
+	var year = today.getFullYear();
+	var month = today.getMonth() + 1;
+	var day = today.getDate()
+	return year.toString() + "-" + (month.toString().length ===2 ? month.toString() : "0" + month.toString()) + "-" + (day.toString().length ===2 ? day.toString() : "0" + day.toString())
+}
 
 module.exports = Appointment;
