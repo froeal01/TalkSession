@@ -30,3 +30,18 @@ exports.dailyschedule = function(req,res){
 		res.send({times:results});
 	});
 }
+
+exports.monthlyslots = function (req,res){
+	Appointment.monthlyTimes(function(error,results){
+		res.send({openings:results});
+	});
+}
+
+
+
+
+
+
+
+
+

@@ -46,6 +46,24 @@ Appointment.create = function(dates,times,creatorId,cb){
  }
 }
 
+
+Appointment.monthlyTimes = function(cb){
+	pg.connect(config.dbString, function(err,client,done){
+		if(err){
+			throw(err); //handleError better
+		}
+		client.query("select date_trunc('day',appointment_date) as appointment_date2, count(*) from appointments group by appointment_date2 order by appointment_date2",[],function(err,results){
+			done();
+			if(err){
+				throw(err); //handleError better
+			}
+			var values = results.rows.map(function(values){return values;})
+			cb(null,values);
+		});
+	})
+}
+
+
 Appointment.getDailySchedule = function(adminId, cb){
  var date = today();
  pg.connect(config.dbString, function(err,client,done){

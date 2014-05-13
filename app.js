@@ -7,6 +7,7 @@ var index = require('./routes/index.js');
 var events = require('./routes/events.js');
 var sessions = require('./routes/sessions.js');
 var adminAuth = require ('./middleware/adminAuth.js');
+var userAuth = require ('./middleware/userAuth.js');
 var app = express();
 var helpers = require('express-helpers');
 var admin =  require("./routes/admins.js");
@@ -45,6 +46,7 @@ app.get('/', index.index);
 app.get('/events',events.index);
 app.get('/events/:date', events.show);
 app.post('/events/dailyschedule', adminAuth, events.dailyschedule);
+app.post('/events/timeslots', userAuth, events.monthlyslots);
 
 // sessions
 app.post('/', sessions.create);

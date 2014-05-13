@@ -6,7 +6,7 @@ exports.create = function (req, res){
 		if (user && user.authenticate(req.body.password)){
 
 			req.session.userId = user.userId;
-			res.redirect('/admins/home');
+			user.admin ? res.redirect('/admins/home') : res.redirect('/events');
 		} else if (user){
 
 			res.render('index',{error: "Wrong email or password"});

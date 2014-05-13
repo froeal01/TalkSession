@@ -1,4 +1,49 @@
-<div id="calendar"></div>
+<div class="uk-grid">
+	<div class = "uk-width-1-2">
+		<div id="calendar"></div>
+	</div>
+	<div class = "uk-width-1-2 next-session-div">
+		<h3> Next Session </h3>
+	</div>
+	<div class = "uk-width-1-1 pending-times">
+		<h3> Times pending confirmation </h3>
+	</div>
+</div>
+
+
+<script>
+		$(function(){
+		var date = null
+		$.post('/events/timeslots', function(data){
+				var availableSlots = $.map(data.openings, function(session){ //deal with error of not being able to display calendar 
+					// when no appointments are available.
+					return {
+				 						start : prettifyDate(session.appointment_date2),
+				 						title : session.count + " open slot(s)" 
+		 						}
+				})
+				$("#calendar").fullCalendar({
+		 				events: availableSlots
+					});
+		});
+			
+		function prettifyDate(date){
+			var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/)
+			return formattedDate[1] 
+		}					
+ 
+
+		var grabDateLink = function (){
+		$('.fc-day').on('click', function(){
+			var dateClicked = $(this).data("date")
+			window.location.href = '/events/' + dateClicked;
+			return false;
+		});
+	}
+grabDateLink();
+
+
+ });
 
 
 
@@ -6,4 +51,4 @@
 
 
 
-<script type="text/javascript" src="javascripts/calendar.js"></script>
+</script>
