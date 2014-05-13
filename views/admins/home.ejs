@@ -1,0 +1,57 @@
+<% include ../shared/admin_navbar %>
+<div class = "uk-grid">
+	<div class = "uk-width-1-3">
+		<div class = "uk-pannel uk-panel-box uk-panel-box-secondary">
+			<h3 class = "uk-panel-title">Next Appointment for each Client</h3>
+		</div>
+	</div>
+
+	<div class = "uk-width-1-3">
+		<div class = "uk-panel uk-panel-box uk-panel-box-secondary">
+			<div class = "day-calendar"></div>
+		</div>
+	</div>
+
+	<div class = "uk-width-1-3">
+		<div class = "uk-panel uk-panel-box uk-panel-box-secondary">
+			<h3 class = "uk-panel-title"> Appointments needing confirmation</h3>
+
+
+		</div>
+	</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+<script>
+	$(function(){
+		var date = null
+		$.post('/events/dailyschedule', function(data){
+				var dailyTimes = $.map(data.times, function(session){
+					return {
+				 						id : session.appointmentId,
+				 						start : prettifyDate(session.appointmentDate,session.startTime),
+				 						end : prettifyDate(session.appointmentDate,session.endTime),
+				 						title : session.clientName == null ? "Open Slot" : session.clientName,
+				 						allDay : false
+		 						}
+				})
+				$(".day-calendar").fullCalendar({
+						defaultView:'agendaDay',
+		 				events: dailyTimes
+					});
+		});
+			
+		function prettifyDate(date,time){
+			var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/)
+			return formattedDate[1] + " " + time
+		}					
+ });
+</script>

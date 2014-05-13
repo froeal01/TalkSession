@@ -1,3 +1,19 @@
 .times-div{
 	margin-top: 10px;
 }
+
+.date-selected{
+	background-color: red;
+}
+
+.time-checkbox{
+	margin-bottom: 5px;
+}
+
+.message-field{
+	display: none;
+}
+
+.uk-navbar{
+	margin-bottom: 10px;
+}

@@ -6,9 +6,10 @@ var path = require('path');
 var index = require('./routes/index.js');
 var events = require('./routes/events.js');
 var sessions = require('./routes/sessions.js');
+var adminAuth = require ('./middleware/adminAuth.js');
 var app = express();
 var helpers = require('express-helpers');
-var admin =  require("./routes/admin.js");
+var admin =  require("./routes/admins.js");
 
 // ** for all environments **//
 
@@ -40,19 +41,20 @@ if ('development' === app.get('env')){
 // index
 app.get('/', index.index);
 
-// calendar index
+// calendar 
 app.get('/events',events.index);
 app.get('/events/:date', events.show);
-
+app.post('/events/dailyschedule', adminAuth, events.dailyschedule);
 
 // sessions
 app.post('/', sessions.create);
+app.get('/signout', sessions.delete);
 
 
 //** admin path **//
-app.get('/admins/home', admin.home);
-
-
+app.get('/admins/home', adminAuth, admin.home);
+app.get('/admins/events/new', adminAuth, events.new);
+app.post('/admins/events/new', adminAuth, events.create);
 
 http.createServer(app).listen(app.get('port'), function(){
 	console.log('Express server listening on port' + app.get('port'));
