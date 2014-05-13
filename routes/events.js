@@ -1,6 +1,9 @@
 var Appointment = require('../models/appointment.js')
 
 exports.index = function (req, res){
+	Appointment.loadClientDash(req.session.userId, function(err,results){
+		
+	})
 	res.render('events/index.ejs');
 }
 
@@ -28,7 +31,12 @@ exports.create = function(req,res){
 }
 
 exports.update = function(req,res){
-	
+	Appointment.update(req.body.id,req.session.userId,function(err,message){
+		if(err){
+			throw(err);
+		}
+		res.redirect('/events');
+	});
 }
 
 exports.dailyschedule = function(req,res){
@@ -46,6 +54,9 @@ exports.monthlyslots = function (req,res){
 	});
 }
 
+exports.confirmation = function(req,res){
+	res.render('events/confirmation');
+}
 
 
 

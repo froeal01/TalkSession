@@ -9,8 +9,8 @@
 				<form class = "uk-form", action="/events/<%= date %>", method="POST">
 					<div class = "uk-form-row">
 						<label><%= availableTimes[i].start_time + " - " + availableTimes[i].end_time%> </label>
-						<input type="hidden", value = "<%= availableTimes[i].appointment_id %>">
-						<input type="submit", class="uk-button uk-button-success" value = "Book this appointment">
+						<input type="hidden" name="id" value = "<%= availableTimes[i].appointment_id %>">
+						<input type="submit" class="uk-button uk-button-success" value = "Book this appointment">
 					</div>
 				</form>
 		<% }%>

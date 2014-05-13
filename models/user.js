@@ -7,6 +7,7 @@ var Appointment = require('./appointment.js')
 var User = function(arg){
 	this.email = arg.email;
 	this.password = arg.password;
+	this.firstName = arg.first_name;
 	this.userId = arg.user_id;
 	this.admin = arg.admin;
 }
@@ -83,7 +84,21 @@ User.prototype.authenticate = function(password){
 	return this.password === password;
 }
 
-
+User.prototype.bookAppointment = function(appointmentId,cb){
+	var userId = this.userId;
+	pg.connect(config.dbString, function(err,client,done){
+		if(err){
+			throw(err);
+		}
+		client.query('INSERT INTO users_appointments_join (user_id, appointment_id, created_at) VALUES($1,$2,to_timestamp($3)',[userId,appointmentId], function(err,results){
+			done();
+			if (err){
+				throw(err)
+			}
+			cb(null,results);
+		});
+	});
+}
 
 
 // function earliestClientTimes (adminId,cb){ //adminId is passed to easily scale when more admins

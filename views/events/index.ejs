@@ -14,7 +14,8 @@
 <script>
 		$(function(){
 		var date = null
-		$.post('/events/timeslots', function(data){
+		$.post('/timeslots', function(data){
+			console.log(data);
 				var availableSlots = $.map(data.openings, function(session){ //deal with error of not being able to display calendar 
 					// when no appointments are available.
 					return {
