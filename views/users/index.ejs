@@ -1,0 +1,63 @@
+<div class="uk-grid">
+	<div class = "uk-width-1-2">
+		<div id="calendar"></div>
+	</div>
+	<div class = "uk-width-1-2 next-session-div">
+		<h3> Next Session </h3>
+		<% console.log(dashInfo.pendingAppointments) %>
+		<% for(var i=0; i < dashInfo.confirmedAppointments.length; i++){ %>
+				<p><%= dashInfo.confirmedAppointments[i].appointment_date + " " + dashInfo.confirmedAppointments[i].start_time + " - " + dashInfo.confirmedAppointments[i].end_time %></p>
+		<% } %>
+	</div>
+	<div class = "uk-width-1-1 pending-times">
+		<h3> Times pending confirmation </h3>
+		<% for(var i=0; i < dashInfo.pendingAppointments.length; i++){ %>
+				<p><%= dashInfo.pendingAppointments[i].appointment_date + " " + dashInfo.pendingAppointments[i].start_time + " - " + dashInfo.pendingAppointments[i].end_time %></p>
+		<% } %>
+	</div>
+</div>
+
+
+<script>
+		$(function(){
+		var date = null
+		$.post('/timeslots', function(data){
+			console.log(data);
+				var availableSlots = $.map(data.openings, function(session){ //deal with error of not being able to display calendar 
+					// when no appointments are available.
+					return {
+				 						start : prettifyDate(session.appointment_date2),
+				 						title : session.count + " open slot(s)" 
+		 						}
+				})
+				$("#calendar").fullCalendar({
+		 				events: availableSlots
+					});
+				grabDateLink();
+		});
+			
+		function prettifyDate(date){
+			var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/)
+			return formattedDate[1] 
+		}					
+ 
+
+		var grabDateLink = function (){
+		$('.fc-day').on('click', function(){
+			var dateClicked = $(this).data("date")
+			window.location.href = '/events/' + dateClicked;
+			return false;
+		});
+	}
+
+
+
+ });
+
+
+
+
+
+
+
+</script>

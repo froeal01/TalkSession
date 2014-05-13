@@ -1,11 +1,5 @@
 var Appointment = require('../models/appointment.js')
 
-exports.index = function (req, res){
-	Appointment.loadClientDash(req.session.userId, function(err,results){
-		
-	})
-	res.render('events/index.ejs');
-}
 
 exports.show = function (req, res){
 	Appointment.showDailyTimes(req.params.date,function(err,results){
