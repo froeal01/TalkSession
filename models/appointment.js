@@ -1,5 +1,7 @@
 var pg = require('pg');
-var config = require('../config')
+var config = require('../config');
+var async = require('async');
+var User = require('./user.js');
 
 var Appointment = function(args){
 	this.appointmentId = args.appointment_id;
@@ -46,6 +48,64 @@ Appointment.create = function(dates,times,creatorId,cb){
  }
 }
 
+
+Appointment.update = function(appointmentId,userId,cb){
+		async.waterfall([
+			function(callback){
+				User.findById(userId,function(err,user){
+					if(err){
+						callback(err);
+					}
+					callback(null,user);
+				});
+			},
+			function(user,callback){
+				addClientToAppointment(user,appointmentId,function(err,results){
+					if(err){
+						callback(err);
+					}
+					callback(null,results)
+				});
+			}
+		],function(err,results){
+			cb(err,results);
+		});
+}
+
+Appointment.showDailyTimes = function (date, cb){
+	pg.connect(config.dbString, function(err,client,done){
+		if(err){
+			throw(err);//handleError better
+		}
+		client.query("select appointment_id, appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time from appointments where appointment_date = $1 AND booked = false",[date],function(err,results){
+			done();
+			if(err){
+				throw(err);//handleError better
+			}
+			var values = results.rows.map(function(values){return values;})
+			cb(null,values);
+		});
+	});
+}
+
+
+Appointment.monthlyTimes = function(cb){
+	pg.connect(config.dbString, function(err,client,done){
+		if(err){
+			throw(err); //handleError better
+		}
+		client.query("select date_trunc('day',appointment_date) as appointment_date2, count(*) from appointments WHERE booked = false group by appointment_date2 order by appointment_date2",[],function(err,results){
+			done();
+			if(err){
+				throw(err); //handleError better
+			}
+			var values = results.rows.map(function(values){return values;})
+			cb(null,values);
+		});
+	})
+}
+
+
 Appointment.getDailySchedule = function(adminId, cb){
  var date = today();
  pg.connect(config.dbString, function(err,client,done){
@@ -67,6 +127,20 @@ Appointment.getDailySchedule = function(adminId, cb){
  });
 }
 
+function addClientToAppointment (user,appointmentId,cb){
+	pg.connect(config.dbString, function(err,client,done){
+		if(err){
+			throw(err); // handleError
+		}
+		client.query('UPDATE appointments SET (client_name,client_email,booked) = ($1,$2,$3) WHERE appointment_id = $4',[user.firstName,user.email,'true',appointmentId],function(err,results){
+			done();
+			if(err){
+				throw(err);
+			}
+			cb(null,results);
+		});
+	});
+}
 
 function today(){
 	var today = new Date();

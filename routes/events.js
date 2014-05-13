@@ -1,11 +1,13 @@
 var Appointment = require('../models/appointment.js')
 
-exports.index = function (req, res){
-	res.render('events/index.ejs');
-}
 
 exports.show = function (req, res){
-	res.render('events/show.ejs');
+	Appointment.showDailyTimes(req.params.date,function(err,results){
+		if(err){
+			throw(err);
+		}
+		res.render('events/show.ejs', {availableTimes : results, date : req.params.date});
+	});
 }
 
 exports.new = function(req, res){
@@ -22,6 +24,15 @@ exports.create = function(req,res){
 	});
 }
 
+exports.update = function(req,res){
+	Appointment.update(req.body.id,req.session.userId,function(err,message){
+		if(err){
+			throw(err);
+		}
+		res.redirect('/events');
+	});
+}
+
 exports.dailyschedule = function(req,res){
 	Appointment.getDailySchedule(req.session.userId,function(err,results){
 		if(err){
@@ -30,3 +41,21 @@ exports.dailyschedule = function(req,res){
 		res.send({times:results});
 	});
 }
+
+exports.monthlyslots = function (req,res){
+	Appointment.monthlyTimes(function(error,results){
+		res.send({openings:results});
+	});
+}
+
+exports.confirmation = function(req,res){
+	res.render('events/confirmation');
+}
+
+
+
+
+
+
+
+

@@ -6,10 +6,13 @@ var path = require('path');
 var index = require('./routes/index.js');
 var events = require('./routes/events.js');
 var sessions = require('./routes/sessions.js');
+var users = require('./routes/user.js')
+var admin =  require("./routes/admins.js");
 var adminAuth = require ('./middleware/adminAuth.js');
+var userAuth = require ('./middleware/userAuth.js');
 var app = express();
 var helpers = require('express-helpers');
-var admin =  require("./routes/admins.js");
+
 
 // ** for all environments **//
 
@@ -42,14 +45,19 @@ if ('development' === app.get('env')){
 app.get('/', index.index);
 
 // calendar 
-app.get('/events',events.index);
-app.get('/events/:date', events.show);
-app.post('/events/dailyschedule', adminAuth, events.dailyschedule);
+
+app.get('/events/:date', userAuth, events.show);
+app.post('/events/:date', userAuth, events.update);
+app.post('/dailyschedule', adminAuth, events.dailyschedule);
+app.post('/timeslots', userAuth, events.monthlyslots);
+
 
 // sessions
 app.post('/', sessions.create);
 app.get('/signout', sessions.delete);
 
+// client path
+app.get('/home',userAuth,users.index);
 
 //** admin path **//
 app.get('/admins/home', adminAuth, admin.home);

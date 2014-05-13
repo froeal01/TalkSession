@@ -3,21 +3,23 @@
 	<div class = "uk-width-1-1">
 		<h3 class= "available-times-header"> Available Times </h3>
 	</div>
+
+	<% if (availableTimes.length > 0){%>
+		<% for(var i = 0; i < availableTimes.length; i ++ ){ %>
+				<form class = "uk-form", action="/events/<%= date %>", method="POST">
+					<div class = "uk-form-row">
+						<label><%= availableTimes[i].start_time + " - " + availableTimes[i].end_time%> </label>
+						<input type="hidden" name="id" value = "<%= availableTimes[i].appointment_id %>">
+						<input type="submit" class="uk-button uk-button-success" value = "Book this appointment">
+					</div>
+				</form>
+		<% }%>
+	<% } else { %>
+
+	<div class= "uk-width-1-1">
+		<h1> No Available Times </h1>
+	</div>
+	<% } %>
 </div>
-
-<div class = "uk-grid">
-	<div class = "uk-width-1-2 times-div">
-		<h3 class = "available-times"> 10:00am - 11:00am </h3>
-	</div>
-	<div class = "uk-width-1-2 times-div">
-		<a href= '/events/:date/update/:time' class ="uk-button">Book appointment</a>
-	</div>
-
-	<div class = "uk-width-1-2 times-div">
-		<h3 class = "available-times"> 11:00am - 12:00pm </h3>
-	</div>
-	<div class = "uk-width-1-2 times-div">
-		<a href= '/events/:date/update/:time' class ="uk-button">Book appointment</a>
-	</div>
 
 </div>

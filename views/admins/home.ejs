@@ -33,8 +33,9 @@
 <script>
 	$(function(){
 		var date = null
-		$.post('/events/dailyschedule', function(data){
-				var dailyTimes = $.map(data.times, function(session){
+		$.post('/dailyschedule', function(data){
+				var dailyTimes = $.map(data.times, function(session){ //deal with error of not being able to display calendar 
+					// when no appointments are available.
 					return {
 				 						id : session.appointmentId,
 				 						start : prettifyDate(session.appointmentDate,session.startTime),
