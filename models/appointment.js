@@ -46,6 +46,22 @@ Appointment.create = function(dates,times,creatorId,cb){
  }
 }
 
+Appointment.showDailyTimes = function (date, cb){
+	pg.connect(config.dbString, function(err,client,done){
+		if(err){
+			throw(err);//handleError better
+		}
+		client.query("select appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time from appointments where appointment_date = $1",[date],function(err,results){
+			done();
+			if(err){
+				throw(err);//handleError better
+			}
+			var values = results.rows.map(function(values){return values;})
+			cb(null,values);
+		});
+	});
+}
+
 
 Appointment.monthlyTimes = function(cb){
 	pg.connect(config.dbString, function(err,client,done){

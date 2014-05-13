@@ -5,7 +5,12 @@ exports.index = function (req, res){
 }
 
 exports.show = function (req, res){
-	res.render('events/show.ejs');
+	Appointment.showDailyTimes(req.params.date,function(err,results){
+		if(err){
+			throw(err);
+		}
+		res.render('events/show.ejs', {availableTimes : results});
+	});
 }
 
 exports.new = function(req, res){
