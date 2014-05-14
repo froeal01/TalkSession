@@ -1,5 +1,5 @@
-var config = ('./config');
-var pg = ('pg');
+var config = require ('./config');
+var pg = require ('pg');
 
 
 var handleError = function(err,cb,done){
@@ -30,7 +30,23 @@ module.exports.dbCallFirstRow = function(query,parameters,Object,cb){
 		} else if (results.rowCount > 0){
 			cb(null,new Object(results.rows[0]));
 		} else {
-			cb(null)l
+			cb(null);
 		}
 	});
 }
+
+module.exports.dbCallAllRows = function(query,parameters,Object,cb){
+
+	dbCall(query,parameters,function(err,results){
+		if(err){
+			return handleError(err,cb);
+		}
+		var values = results.rows.map(function(value){return value;});
+		cb(null,values);
+	});
+}
+
+
+
+
+
