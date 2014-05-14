@@ -3,6 +3,11 @@
 	<div class = "uk-width-1-3">
 		<div class = "uk-pannel uk-panel-box uk-panel-box-secondary">
 			<h3 class = "uk-panel-title">Next Appointment for each Client</h3>
+			<% for (var i = 0; i < dashboard.clientTimes.length; i++) { %>
+				<div><p><%= dashboard.clientTimes[i].client_name + " " + dashboard.clientTimes[i].appointment_date +
+					" " + dashboard.clientTimes[i].start_time + " - " + dashboard.clientTimes[i].end_time%></p><a href="mailto:<%= dashboard.clientTimes[i].client_email %>" class="uk-button uk-button-primary">Email</a>
+				</div>
+			<% } %>
 		</div>
 	</div>
 
@@ -15,8 +20,18 @@
 	<div class = "uk-width-1-3">
 		<div class = "uk-panel uk-panel-box uk-panel-box-secondary">
 			<h3 class = "uk-panel-title"> Appointments needing confirmation</h3>
+			<% if(dashboard.appointmentConfirms.length > 0){ %>
+				<% for (var i = 0; i < dashboard.appointmentConfirms.length; i++) { %>
+					<div><p><%= dashboard.appointmentConfirms[i].client_name + " " + dashboard.appointmentConfirms[i].appointment_date +
+						" " + dashboard.appointmentConfirms[i].start_time + " - " + dashboard.appointmentConfirms[i].end_time%></p>
 
-
+						<button value="<%=dashboard.appointmentConfirms[i].client_email%>", class="uk-button uk-button-primary confirm-yes"> Confirm,Yes?</button>
+						<button value="<%=dashboard.appointmentConfirms[i].client_email%>", class="uk-button uk-button-danger confirm-no"> Confirm, No?</button>
+					</div>
+				<% } %>
+			<% } else { %>
+				<div><p>No Appointments Need Confirmation</p></div>
+			<% } %>
 		</div>
 	</div>
 
@@ -32,6 +47,13 @@
 
 <script>
 	$(function(){
+
+		$(".confirm-no").on('click',function(e){
+			e.preventDefault;
+			console.log(this);
+		});
+
+
 		var date = null
 		$.post('/dailyschedule', function(data){
 				var dailyTimes = $.map(data.times, function(session){ //deal with error of not being able to display calendar 
@@ -53,6 +75,11 @@
 		function prettifyDate(date,time){
 			var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/)
 			return formattedDate[1] + " " + time
-		}					
+		}	
+
+		
+
+
+
  });
 </script>
