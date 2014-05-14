@@ -53,58 +53,11 @@ function getClientConfirmedAppointment(adminId,callback){
 }
 
 
-
-
-
-	// pg.connect(config.dbString, function(err,client,done){
-	// 	if(err){
-	// 		throw(err) //handle me
-	// 	}
-	// 	client.query('select DISTINCT ON(client_email) client_email, appointment_date, client_name, start_time,end_time '+
-	// 	 'FROM appointments WHERE appointment_date > now() AND confirmed = true '+
-	// 	  'ORDER BY client_email, appointment_date, client_name, start_time,end_time ASC;',[],function(err,results){
-	// 	   	done();
-	// 	   	if(err){
-	// 	   		throw(err);
-	// 	   	}
-	// 	   	if(results.rowCount > 0){
-	// 		   	var confirmed = results.rows.map(function(result){return result});
-	// 		   	cb(null,confirmed);
-	// 	   	} else{
-	// 	   		cb(null,results);
-	// 	   	}
-	// 	   });
-	// });
-
-
 function getAppointmentsNeedingConfirm(adminId,callback){
 	helper.dbCallAllRows('select * from appointments WHERE created_by = $1 AND booked = true AND confirmed = false',[parseInt(adminId)], App, function(err,pending){
 		callback(err,pending);
 	});
 }
-
-
-
-
-
-	// pg.connect(config.dbString, function(err,client,done){
-	// 	if(err){
-	// 		throw(err);
-	// 	}
-	// 	client.query('select * from appointments WHERE created_by = $1 AND booked = true AND confirmed = false',[parseInt(adminId)],function(err,results){
-	// 		done();
-	// 		if(err){
-	// 			throw(err);
-	// 		}
-	// 		if (results.rowCount > 0){
-	// 			var pending = results.rows.map(function(result){return result});
-	// 			cb(null,pending);
-	// 		}else{
-	// 			cb(null,results)
-	// 		}
-	// 	});
-	// });
-
 
 User.getClientDash = function(userId,cb){
 	async.waterfall([
@@ -136,7 +89,7 @@ User.prototype.pendingAppointments = function(user,callback){
 User.prototype.confirmedAppointments = function(user,pending,callback){
 	
 helper.dbCallAllRows("select appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time FROM appointments WHERE appointment_id in (select appointment_id from users_appointments_join where user_id = $1) ORDER BY appointment_date", [parseInt(user.userId)],App,function(err,results){
-	callback(null,{pendingAppointments: pending, confirmedAppointments: results});
+	callback(err,{pendingAppointments: pending, confirmedAppointments: results});
 });
 
 }

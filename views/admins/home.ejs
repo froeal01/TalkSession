@@ -59,10 +59,10 @@
 				var dailyTimes = $.map(data.times, function(session){ //deal with error of not being able to display calendar 
 					// when no appointments are available.
 					return {
-				 						id : session.appointmentId,
-				 						start : prettifyDate(session.appointmentDate,session.startTime),
-				 						end : prettifyDate(session.appointmentDate,session.endTime),
-				 						title : session.clientName == null ? "Open Slot" : session.clientName,
+				 						id : session.appointment_id,
+				 						start : prettifyDate(session.appointment_date,session.start_time),
+				 						end : prettifyDate(session.appointment_date,session.end_time),
+				 						title : session.client_name == null ? "Open Slot" : session.client_name,
 				 						allDay : false
 		 						}
 				})

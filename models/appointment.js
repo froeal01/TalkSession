@@ -2,6 +2,7 @@ var pg = require('pg');
 var config = require('../config');
 var async = require('async');
 var User = require('./user.js');
+var helper = require('../helper.js');
 
 var Appointment = function(args){
 	this.appointmentId = args.appointment_id;
@@ -23,9 +24,7 @@ Appointment.create = function(dates,times,creatorId,cb){
  	if(err){
  		throw err; //toDo work on handlingerrors//
  	}
-// begin looping through date Array
 	dates.forEach(function(date){
- 		//nested loop- times array
  		times.forEach(function(time){
      var startTime = /^(\d+:\d+)/.exec(time)
      var endTime = /(\d+:\d+)$/.exec(time)
@@ -38,7 +37,7 @@ Appointment.create = function(dates,times,creatorId,cb){
  		});
 
 	});
-	done(); //check why this is not closing connection
+	done();
 
  });
  if (errors.length > 0){
@@ -52,20 +51,10 @@ Appointment.create = function(dates,times,creatorId,cb){
 Appointment.update = function(appointmentId,userId,cb){
 		async.waterfall([
 			function(callback){
-				User.findById(userId,function(err,user){
-					if(err){
-						callback(err);
-					}
-					callback(null,user);
-				});
+				User.findById(userId,callback);
 			},
 			function(user,callback){
-				addClientToAppointment(user,appointmentId,function(err,results){
-					if(err){
-						callback(err);
-					}
-					callback(null,results)
-				});
+				addClientToAppointment(user,appointmentId,callback);
 			}
 		],function(err,results){
 			cb(err,results);
@@ -73,74 +62,33 @@ Appointment.update = function(appointmentId,userId,cb){
 }
 
 Appointment.showDailyTimes = function (date, cb){
-	pg.connect(config.dbString, function(err,client,done){
-		if(err){
-			throw(err);//handleError better
-		}
-		client.query("select appointment_id, appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time from appointments where appointment_date = $1 AND booked = false",[date],function(err,results){
-			done();
-			if(err){
-				throw(err);//handleError better
-			}
-			var values = results.rows.map(function(values){return values;})
-			cb(null,values);
-		});
-	});
+	
+	helper.dbCallAllRows("select appointment_id, appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time from appointments where appointment_date = $1 AND booked = false",[date],Appointment,cb);
+
 }
+
 
 
 Appointment.monthlyTimes = function(cb){
-	pg.connect(config.dbString, function(err,client,done){
-		if(err){
-			throw(err); //handleError better
-		}
-		client.query("select date_trunc('day',appointment_date) as appointment_date2, count(*) from appointments WHERE booked = false group by appointment_date2 order by appointment_date2",[],function(err,results){
-			done();
-			if(err){
-				throw(err); //handleError better
-			}
-			var values = results.rows.map(function(values){return values;})
-			cb(null,values);
-		});
-	})
+	helper.dbCallAllRows("select date_trunc('day',appointment_date) as appointment_date2, count(*) from appointments WHERE booked = false group by appointment_date2 order by appointment_date2",[],Appointment,cb);
 }
+
+
 
 
 Appointment.getDailySchedule = function(adminId, cb){
  var date = today();
- pg.connect(config.dbString, function(err,client,done){
- 	if(err){
- 		throw(err); //handleError better
- 	}
- 	client.query('select * from appointments where appointment_date = $1 AND created_by = $2', [date,parseInt(adminId)], function(err,results){
- 		done();
- 		if(err){
- 			throw(err) // handleError better
- 		}
- 		if(results.rowCount > 0){
- 			var values = results.rows.map(function(values){return new Appointment(values);});
- 			cb(null, values)
- 		} else {
- 			cb(null,"No scheduled appointments");
- 		}
- 	});
- });
+ helper.dbCallAllRows('select * from appointments where appointment_date = $1 AND created_by = $2',[date,parseInt(adminId)],Appointment,cb);
 }
 
-function addClientToAppointment (user,appointmentId,cb){
-	pg.connect(config.dbString, function(err,client,done){
-		if(err){
-			throw(err); // handleError
-		}
-		client.query('UPDATE appointments SET (client_name,client_email,booked) = ($1,$2,$3) WHERE appointment_id = $4',[user.firstName,user.email,'true',appointmentId],function(err,results){
-			done();
-			if(err){
-				throw(err);
-			}
-			cb(null,results);
-		});
+
+function addClientToAppointment (user,appointmentId,callback){
+	helper.dbCall('UPDATE appointments SET (client_name,client_email,booked) = ($1,$2,$3) WHERE appointment_id = $4',[user.firstName,user.email,'true',appointmentId],function(err,results){
+		callback(err,results);
 	});
 }
+
+
 
 function today(){
 	var today = new Date();
