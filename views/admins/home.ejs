@@ -23,7 +23,10 @@
 			<% if(dashboard.appointmentConfirms.length > 0){ %>
 				<% for (var i = 0; i < dashboard.appointmentConfirms.length; i++) { %>
 					<div><p><%= dashboard.appointmentConfirms[i].client_name + " " + dashboard.appointmentConfirms[i].appointment_date +
-						" " + dashboard.appointmentConfirms[i].start_time + " - " + dashboard.appointmentConfirms[i].end_time%></p><a class="uk-button uk-button-primary confirm-yes">Confirm,Yes?</a><a class= "uk-button uk-button-danger confirm-no">Confirm, No?</a>
+						" " + dashboard.appointmentConfirms[i].start_time + " - " + dashboard.appointmentConfirms[i].end_time%></p>
+
+						<button value="<%=dashboard.appointmentConfirms[i].client_email%>", class="uk-button uk-button-primary confirm-yes"> Confirm,Yes?</button>
+						<button value="<%=dashboard.appointmentConfirms[i].client_email%>", class="uk-button uk-button-danger confirm-no"> Confirm, No?</button>
 					</div>
 				<% } %>
 			<% } else { %>
@@ -44,6 +47,13 @@
 
 <script>
 	$(function(){
+
+		$(".confirm-no").on('click',function(e){
+			e.preventDefault;
+			console.log(this);
+		});
+
+
 		var date = null
 		$.post('/dailyschedule', function(data){
 				var dailyTimes = $.map(data.times, function(session){ //deal with error of not being able to display calendar 
@@ -65,6 +75,11 @@
 		function prettifyDate(date,time){
 			var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/)
 			return formattedDate[1] + " " + time
-		}					
+		}	
+
+		
+
+
+
  });
 </script>
