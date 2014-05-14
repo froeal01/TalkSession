@@ -1,7 +1,8 @@
 var pg = require('pg');
-var config = require('../config')
-var async = require('async')
-var Appointment = require('./appointment.js')
+var config = require('../config');
+var async = require('async');
+var App = require('./appointment.js');
+var helper = require('../helper.js');
 
 
 var User = function(arg){
@@ -13,65 +14,25 @@ var User = function(arg){
 }
 
 User.findOne = function(email, cb){
-	pg.connect(config.dbString, function (err, client, done){
-		if(err){
-			throw err;
-		}
-		client.query("select * from users where email like $1",[email], function(err,results){
-			done();
-
-			if (err) {
-				throw err;
-			} else if(results.rowCount > 0){
-				cb(null, new User(results.rows[0]));
-			}
-			else{
-				cb(null);
-			}
-
-		});
+	helper.dbCallFirstRow('select * from users where email like $1',[email],User,cb);
+}	
 	
-	});
 
-}
 
 User.findById = function(userId, cb){
-	if (!(userId)){
-		cb();
-	}
-	pg.connect(config.dbString, function (err, client, done){
-		if(err){
-			throw err;
-		}
-		client.query('select * from users where user_id = $1',[userId], function(err,results){
-			done();
-			if (err){
-				throw err;
-			} 
-				cb(null, new User(results.rows[0]));
-		});
-	});
+	helper.dbCallFirstRow('select * from users where user_id = $1',[userId],User,cb);
 }
+
 
 User.getAdminDashboard = function(adminId,cb) { //admin id passed for when multiples admins
 
 	async.parallel({
 		clientTimes: function(callback){
-			getClientConfirmedAppointment(adminId, function(err,confirmed){
-				if(err){
-					callback(err);
-				}
-				callback(null,confirmed);
-			});
+			getClientConfirmedAppointment(adminId,callback) 
 			
 		},
 		appointmentConfirms: function(callback){
-			getAppointmentsNeedingConfirm(adminId,function(err,pending){
-				if(err){
-					callback(err);
-				}
-				callback(null,pending)
-			});
+			getAppointmentsNeedingConfirm(adminId,callback)
 		}
 	}, 
 	function(err,results){
@@ -82,73 +43,32 @@ User.getAdminDashboard = function(adminId,cb) { //admin id passed for when multi
 	}); 
 }
 
-function getClientConfirmedAppointment(adminId,cb){
-	pg.connect(config.dbString, function(err,client,done){
-		if(err){
-			throw(err) //handle me
-		}
-		client.query('select DISTINCT ON(client_email) client_email, appointment_date, client_name, start_time,end_time '+
+function getClientConfirmedAppointment(adminId,callback){
+	
+	helper.dbCallAllRows('select DISTINCT ON(client_email) client_email, appointment_date, client_name, start_time,end_time '+
 		 'FROM appointments WHERE appointment_date > now() AND confirmed = true '+
-		  'ORDER BY client_email, appointment_date, client_name, start_time,end_time ASC;',[],function(err,results){
-		   	done();
-		   	if(err){
-		   		throw(err);
-		   	}
-		   	if(results.rowCount > 0){
-			   	var confirmed = results.rows.map(function(result){return result});
-			   	cb(null,confirmed);
-		   	} else{
-		   		cb(null,results);
-		   	}
-		   });
-	});
+		  'ORDER BY client_email, appointment_date, client_name, start_time,end_time ASC;',[],App,function(err,confirmed){
+		  	callback(err,confirmed);
+		  });
 }
 
-function getAppointmentsNeedingConfirm(adminId,cb){
-	pg.connect(config.dbString, function(err,client,done){
-		if(err){
-			throw(err);
-		}
-		client.query('select * from appointments WHERE created_by = $1 AND booked = true AND confirmed = false',[parseInt(adminId)],function(err,results){
-			done();
-			if(err){
-				throw(err);
-			}
-			if (results.rowCount > 0){
-				var pending = results.rows.map(function(result){return result});
-				cb(null,pending);
-			}else{
-				cb(null,results)
-			}
-		});
+
+function getAppointmentsNeedingConfirm(adminId,callback){
+	helper.dbCallAllRows('select * from appointments WHERE created_by = $1 AND booked = true AND confirmed = false',[parseInt(adminId)], App, function(err,pending){
+		callback(err,pending);
 	});
 }
 
 User.getClientDash = function(userId,cb){
 	async.waterfall([
 		function(callback){
-			User.findById(userId, function(err,user){
-				if(err){
-					callback(err);
-				}
-				callback(null,user);
-			});
+			User.findById(userId, callback);
 		},
 		function(user,callback){
-			user.pendingAppointments(function(err,pending){
-				if(err){
-					callback(err);
-				}
-				callback(null,user,pending);
-			})
+			user.pendingAppointments(user,callback);
 		},
 		function(user,pending,callback){
-			user.confirmedAppointments(user,function(err,confirmed){
-				if(err){
-					callback(err);
-				}
-				callback(null,{pendingAppointments: pending, confirmedAppointments: confirmed});
-			});
+			user.confirmedAppointments(user,pending,callback);
 		}
 
 		], function(err,results){
@@ -156,47 +76,24 @@ User.getClientDash = function(userId,cb){
 		});
 }
 
-User.prototype.pendingAppointments = function(cb){
+User.prototype.pendingAppointments = function(user,callback){
 	var user = this;
-	pg.connect(config.dbString, function(err,client,done){
-		if (err){
-			throw(err);
-		}
-		client.query("select appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time from appointments WHERE client_email like $1 AND confirmed = false ORDER BY appointment_date",[user.email],function(err,results){
-			done();
-			if (err){
-				throw(err);
-			}
-			if (results.rowCount > 0){
-			
-				var pending = results.rows.map(function(result){return result});
-				cb(null,pending);
-			} else{
-				cb(null,"No Appointments Pending");
-			}
-		});
+
+	helper.dbCallAllRows("select appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time from appointments WHERE client_email like $1 AND confirmed = false ORDER BY appointment_date",[user.email],App,function(err,results){
+		callback(err,user,results);
 	});
+
 }
 
-User.prototype.confirmedAppointments = function(user,cb){
-	pg.connect(config.dbString, function(err,client,done){
-		done();
-		if(err){
-			throw(err);
-		}
-		client.query("select appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time FROM appointments WHERE appointment_id in (select appointment_id from users_appointments_join where user_id = $1) ORDER BY appointment_date", [parseInt(user.userId)],function(err,results){
-			if(err){
-				throw(err);
-			}
-			if(results.rowCount > 0){
-				var confirmed = results.rows.map(function(result){return result});
-				cb(null,confirmed);
-			} else {
-				cb(null, "No Confirmed Appointments");
-			}
-		});
-	});
+
+User.prototype.confirmedAppointments = function(user,pending,callback){
+	
+helper.dbCallAllRows("select appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time FROM appointments WHERE appointment_id in (select appointment_id from users_appointments_join where user_id = $1) ORDER BY appointment_date", [parseInt(user.userId)],App,function(err,results){
+	callback(err,{pendingAppointments: pending, confirmedAppointments: results});
+});
+
 }
+
 
 User.prototype.isAdmin = function(){
 	return this.admin === true;
@@ -209,29 +106,18 @@ User.prototype.authenticate = function(password){
 
 User.prototype.bookAppointment = function(appointmentId,cb){
 	var userId = this.userId;
-	pg.connect(config.dbString, function(err,client,done){
+	var query = 'INSERT INTO users_appointments_join (user_id, appointment_id, created_at) VALUES($1,$2,to_timestamp($3)'
+	var params = [parseInt(userId),parseInt(appointmentId)]
+
+	helper.dbCall(query,params,function(err,results){
 		if(err){
-			throw(err);
+			cb(err);
+		}else{
+			cb();
 		}
-		client.query('INSERT INTO users_appointments_join (user_id, appointment_id, created_at) VALUES($1,$2,to_timestamp($3)',[parseInt(userId),parseInt(appointmentId)], function(err,results){
-			done();
-			if (err){
-				throw(err)
-			}
-			cb(null,results);
-		});
 	});
 }
 
-
-// function earliestClientTimes (adminId,cb){ //adminId is passed to easily scale when more admins
-// 	pg.connect(config.dbString, function(err,client,done){
-// 		if(err){
-// 			throw(err);
-// 		}
-// 		client.query('select ')
-// 	});
-// }
 
 
 module.exports = User;
