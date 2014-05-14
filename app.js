@@ -10,6 +10,8 @@ var users = require('./routes/user.js')
 var admin =  require("./routes/admins.js");
 var adminAuth = require ('./middleware/adminAuth.js');
 var userAuth = require ('./middleware/userAuth.js');
+var config = require('./config.js')
+var pg = require('pg').native
 var app = express();
 var helpers = require('express-helpers');
 
@@ -67,3 +69,6 @@ app.post('/admins/events/new', adminAuth, events.create);
 http.createServer(app).listen(app.get('port'), function(){
 	console.log('Express server listening on port' + app.get('port'));
 });
+
+
+
