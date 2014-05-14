@@ -57,10 +57,21 @@ User.getAdminDashboard = function(adminId,cb) { //admin id passed for when multi
 
 	async.parallel({
 		clientTimes: function(callback){
-			callback();
+			getClientConfirmedAppointment(adminId, function(err,confirmed){
+				if(err){
+					callback(err);
+				}
+				callback(null,confirmed);
+			});
+			
 		},
 		appointmentConfirms: function(callback){
-			callback();
+			getAppointmentsNeedingConfirm(adminId,function(err,pending){
+				if(err){
+					callback(err);
+				}
+				callback(null,pending)
+			});
 		}
 	}, 
 	function(err,results){
@@ -71,6 +82,49 @@ User.getAdminDashboard = function(adminId,cb) { //admin id passed for when multi
 	}); 
 }
 
+function getClientConfirmedAppointment(adminId,cb){
+	pg.connect(config.dbString, function(err,client,done){
+		if(err){
+			throw(err) //handle me
+		}
+		client.query('select DISTINCT ON(client_email)  MIN(appointment_date) ' +
+		 'as appointment_date,start_time,end_time,client_name,client_email from appointments '+
+		  'WHERE appointment_date >= current_date  AND end_time <= current_time AND confirmed = true ' +
+		  'GROUP BY client_email,start_time,end_time,client_name,appointment_date '+
+		   'ORDER BY client_email, abs(current_date - appointment_date) asc',[],function(err,results){
+		   	done();
+		   	if(err){
+		   		throw(err);
+		   	}
+		   	if(results.rowCount > 0){
+			   	var confirmed = results.rows.map(function(result){return result});
+			   	cb(null,confirmed);
+		   	} else{
+		   		cb(null,results);
+		   	}
+		   });
+	});
+}
+
+function getAppointmentsNeedingConfirm(adminId,cb){
+	pg.connect(config.dbString, function(err,client,done){
+		if(err){
+			throw(err);
+		}
+		client.query('select * from appointments WHERE created_by = $1 AND booked = true AND confirmed = false',[parseInt(adminId)],function(err,results){
+			done();
+			if(err){
+				throw(err);
+			}
+			if (results.rowCount > 0){
+				var pending = results.rows.map(function(result){return result});
+				cb(null,pending);
+			}else{
+				cb(null,results)
+			}
+		});
+	});
+}
 
 User.getClientDash = function(userId,cb){
 	async.waterfall([
