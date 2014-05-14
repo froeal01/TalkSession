@@ -87,11 +87,9 @@ function getClientConfirmedAppointment(adminId,cb){
 		if(err){
 			throw(err) //handle me
 		}
-		client.query('select DISTINCT ON(client_email)  MIN(appointment_date) ' +
-		 'as appointment_date,start_time,end_time,client_name,client_email from appointments '+
-		  'WHERE appointment_date >= current_date  AND end_time <= current_time AND confirmed = true ' +
-		  'GROUP BY client_email,start_time,end_time,client_name,appointment_date '+
-		   'ORDER BY client_email, abs(current_date - appointment_date) asc',[],function(err,results){
+		client.query('select DISTINCT ON(client_email) client_email, appointment_date, client_name, start_time,end_time '+
+		 'FROM appointments WHERE appointment_date > now() AND confirmed = true '+
+		  'ORDER BY client_email, appointment_date, client_name, start_time,end_time ASC;',[],function(err,results){
 		   	done();
 		   	if(err){
 		   		throw(err);
