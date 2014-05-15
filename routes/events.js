@@ -34,7 +34,7 @@ exports.update = function(req,res){
 }
 
 exports.dailyschedule = function(req,res){
-	Appointment.getDailySchedule(req.session.userId,function(err,results){
+	Appointment.getDailySchedule(req.session.userId,req.body.dateToInquiry,function(err,results){
 		if(err){
 			throw(err);
 		}

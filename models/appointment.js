@@ -76,8 +76,7 @@ Appointment.monthlyTimes = function(cb){
 
 
 
-Appointment.getDailySchedule = function(adminId,cb){
-	var date = today();
+Appointment.getDailySchedule = function(adminId,date,cb){
  helper.dbCallAllRows('select * from appointments where appointment_date = $1 AND created_by = $2',[date,parseInt(adminId)],null,cb);
 }
 
