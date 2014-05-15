@@ -76,8 +76,8 @@ Appointment.monthlyTimes = function(cb){
 
 
 
-Appointment.getDailySchedule = function(adminId, cb){
- var date = today();
+Appointment.getDailySchedule = function(adminId,cb){
+	var date = today();
  helper.dbCallAllRows('select * from appointments where appointment_date = $1 AND created_by = $2',[date,parseInt(adminId)],null,cb);
 }
 
@@ -110,7 +110,7 @@ function addClientToAppointment (user,appointmentId,callback){
 }
 
 function confirmedToTrue (appointmentId,callback){
-	helper.dbCall('UPDATE appointments SET(booked) = (true) WHERE appointment_id = $1 RETURNING client_email',[parseInt(appointmentId)],function(err,results){
+	helper.dbCall('UPDATE appointments SET(confirmed) = (true) WHERE appointment_id = $1 RETURNING client_email',[parseInt(appointmentId)],function(err,results){
 		callback(err,appointmentId,results.rows[0].client_email)
 	});
 }

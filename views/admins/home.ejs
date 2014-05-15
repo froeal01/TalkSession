@@ -51,6 +51,9 @@
 <script>
 	$(function(){
 
+		// set global variable for date
+		
+
 		// Listeners on Page
 
 		$(".confirm-no").on('click',function(e){
@@ -70,7 +73,11 @@
 			acceptAppointment(apptId,buttonClicked,handleResponse);
 		});
 
-	
+	// function setNextButton(){
+	// 	$(".fc-button-next").on('click',function(){
+	// 			moveForwardDay();
+	// 	});
+	// }
 	// Ajax request to fill calendar info
 
 	function fillEvents(date){
@@ -80,8 +87,8 @@
 					console.log(session)
 					return {
 				 						id : session.appointment_id,
-				 						start : prettifyDate(session.appointment_date,session.start_time),
-				 						end : prettifyDate(session.appointment_date,session.end_time),
+				 						start : prettifyDate(session.appointment_date)+ " " + session.start_time,
+				 						end : prettifyDate(session.appointment_date)+ " " + session.end_time,
 				 						title : session.client_name == null ? "Open Slot" : session.client_name,
 				 						allDay : false
 		 						}
@@ -90,16 +97,23 @@
 						defaultView:'agendaDay',
 		 				events: dailyTimes
 					});
+			// setNextButton();
 			});
 		};		
 
-	function prettifyDate(date,time){
-		var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/)
-		return formattedDate[1] + " " + time
-	}	
 
+	function prettifyDate(date){
+			var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/);
+		 return formattedDate[1]
+	  }		
 	
 	//helper functions
+
+	function moveForwardDay(){
+		var roughTomorrow = date.setDate(date.getDate() + 1)
+		var tomorrow = new Date(roughTomorrow);
+		fillevents(prettifyDate(tomorrow));
+	}
 
 	function declineAppointment(apptId,buttonClicked,cb){
 		$.post('/decline-appointment',{data:apptId},function(data){
@@ -130,6 +144,8 @@
 		}
 	}
 
-	fillEvents();	
+	fillEvents();
+
+	
  });
 </script>
