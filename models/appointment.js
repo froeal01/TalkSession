@@ -79,7 +79,7 @@ function addClientToAppointment (user,appointmentId,callback){
 	helper.dbCall('UPDATE appointments SET (client_name,client_email,booked) = ($1,$2,$3) WHERE appointment_id = $4',[user.firstName,user.email,'true',appointmentId],function(err,results){
 		callback(err,results);
 	});
-}
+} 
 
 function confirmedToTrue (appointmentId,callback){
 	helper.dbCall('UPDATE appointments SET(confirmed) = (true) WHERE appointment_id = $1 RETURNING client_email',[parseInt(appointmentId)],function(err,results){

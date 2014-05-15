@@ -45,7 +45,7 @@ var users = [
 function setDbStub(stub){
 	assert(stub);
 
-	User.__set__("User",{
+	User.__set__("helper",{
 
 		findOne: stub,
 		findById: stub,
