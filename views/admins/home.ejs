@@ -52,8 +52,13 @@
 	$(function(){
 
 		// set global variable for date
-		
+		 var date = new Date();
+		 var dailyTimes = {};
 
+
+		 // initial calendar
+
+		 
 		// Listeners on Page
 
 		$(".confirm-no").on('click',function(e){
@@ -66,22 +71,33 @@
 
 		$(".confirm-yes").on('click',function(e){
 			e.preventDefault;
-			console.log(this)
 			$('.confirmer').attr('disabled',true);
 			var buttonClicked = this;
 			var apptId = $(this).val();
 			acceptAppointment(apptId,buttonClicked,handleResponse);
 		});
 
-	// function setNextButton(){
-	// 	$(".fc-button-next").on('click',function(){
-	// 			moveForwardDay();
-	// 	});
-	// }
+	function setNextButton(){
+		$(".fc-button-next").on('click',function(){
+				moveForwardDay();
+		});
+	}
+
+	function setPrevButton(){
+		$(".fc-button-prev").on('click',function(){
+			moveBackDay();
+		});
+	}
+
+	function setTodayButton(){
+		$(".fc-button-today").on('click',function(){
+			resetDate();
+		});
+	}
 	// Ajax request to fill calendar info
 
-	function fillEvents(date){
-		$.post('/dailyschedule',{dateToInquiry:date} ,function(data){
+	function fillEvents(niceDate){
+		$.post('/dailyschedule',{dateToInquiry:niceDate} ,function(data){
 				var dailyTimes = $.map(data.times, function(session){ //deal with error of not being able to display calendar 
 					// when no appointments are available.
 					console.log(session)
@@ -93,11 +109,15 @@
 				 						allDay : false
 		 						}
 				})
-				$(".day-calendar").fullCalendar({
+					$(".day-calendar").fullCalendar({
 						defaultView:'agendaDay',
 		 				events: dailyTimes
 					});
+				console.log(date);
+				console.log(dailyTimes);
 			// setNextButton();
+			// setPrevButton();
+			// setTodayButton();  //change these to switch statement and only have one 
 			});
 		};		
 
@@ -110,10 +130,27 @@
 	//helper functions
 
 	function moveForwardDay(){
-		var roughTomorrow = date.setDate(date.getDate() + 1)
-		var tomorrow = new Date(roughTomorrow);
-		fillevents(prettifyDate(tomorrow));
+		date.setDate(date.getDate() + 1)
+		sendDate(date);
 	}
+
+	function moveBackDay(){
+		date.setDate(date.getDate() - 1)
+		sendDate(date)
+	}
+
+	function resetDate(){
+		date = new Date();
+		sendDate(date);
+	}
+
+	function sendDate(date){
+		var sendableDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+		console.log(sendableDate);
+
+		fillEvents(sendableDate);
+	}
+
 
 	function declineAppointment(apptId,buttonClicked,cb){
 		$.post('/decline-appointment',{data:apptId},function(data){
@@ -144,7 +181,7 @@
 		}
 	}
 
-	fillEvents();
+	resetDate();
 
 	
  });
