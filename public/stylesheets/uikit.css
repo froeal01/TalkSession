@@ -1430,8 +1430,9 @@ iframe {
  * Sub-modifier: `uk-panel-box-secondary`
  */
 .uk-panel-box-secondary {
-  background-color: #eeeeee;
+  background-color: #ffffff;
   color: #444444;
+ 
 }
 .uk-panel-box-secondary .uk-panel-title {
   color: #444444;
