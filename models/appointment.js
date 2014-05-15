@@ -78,9 +78,30 @@ Appointment.monthlyTimes = function(cb){
 
 Appointment.getDailySchedule = function(adminId, cb){
  var date = today();
- helper.dbCallAllRows('select * from appointments where appointment_date = $1 AND created_by = $2',[date,parseInt(adminId)],Appointment,cb);
+ helper.dbCallAllRows('select * from appointments where appointment_date = $1 AND created_by = $2',[date,parseInt(adminId)],null,cb);
 }
 
+Appointment.declineAppointment = function(appointmentId, cb){
+	helper.dbCall('Update appointments SET(client_email,client_name,booked) = (null,null,false) WHERE appointment_id = $1',[parseInt(appointmentId)], function(err,results){
+		cb(err,null);
+	});
+}
+
+Appointment.acceptAppointment = function(appointmentId,cb){
+	async.waterfall([
+		function(callback){
+			confirmedToTrue(appointmentId,callback)
+		},
+		function(appointment_id,clientEmail,callback){ //first arg name changed to minimize error with original
+			User.findOne(clientEmail,callback);
+		},
+		function(user,callback){
+			user.bookAppointment(appointmentId,callback);
+		}
+		], function(err,results){
+				cb(err,null);
+		});
+}
 
 function addClientToAppointment (user,appointmentId,callback){
 	helper.dbCall('UPDATE appointments SET (client_name,client_email,booked) = ($1,$2,$3) WHERE appointment_id = $4',[user.firstName,user.email,'true',appointmentId],function(err,results){
@@ -88,6 +109,11 @@ function addClientToAppointment (user,appointmentId,callback){
 	});
 }
 
+function confirmedToTrue (appointmentId,callback){
+	helper.dbCall('UPDATE appointments SET(booked) = (true) WHERE appointment_id = $1 RETURNING client_email',[parseInt(appointmentId)],function(err,results){
+		callback(err,appointmentId,results.rows[0].client_email)
+	});
+}
 
 
 function today(){
