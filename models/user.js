@@ -88,7 +88,7 @@ User.prototype.pendingAppointments = function(user,callback){
 
 User.prototype.confirmedAppointments = function(user,pending,callback){
 	
-helper.dbCallAllRows("select to_char(appointment_date,'Day, Month DD YYYY') as appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time FROM appointments WHERE appointment_id in (select appointment_id from users_appointments_join where user_id = $1) AND appointment_date > now() ORDER BY appointment_date desc", [parseInt(user.userId)],App,function(err,results){
+helper.dbCallAllRows("select to_char(appointment_date,'Day, Month DD YYYY') as appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time, 'HH12:MI:SS:am') as end_time FROM appointments WHERE appointment_id in (select appointment_id from users_appointments_join where user_id = $1) AND appointment_date > now() ORDER BY appointment_date asc", [parseInt(user.userId)],App,function(err,results){
 	callback(err,{pendingAppointments: pending, confirmedAppointments: results});
 });
 
