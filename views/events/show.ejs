@@ -1,16 +1,18 @@
+<% include ../shared/client_navbar %>
+
 <div class = "uk-grid">
 	
-	<div class = "uk-width-1-1">
+	<div class = "uk-width-1-1 book-time-div">
 		<h3 class= "available-times-header"> Available Times </h3>
 	</div>
 
 	<% if (availableTimes.length > 0){%>
 		<% for(var i = 0; i < availableTimes.length; i ++ ){ %>
-				<form class = "uk-form", action="/events/<%= date %>", method="POST">
-					<div class = "uk-form-row">
-						<label><%= availableTimes[i].start_time + " - " + availableTimes[i].end_time%> </label>
+				<form class = "uk-form book-form", action="/events/<%= date %>", method="POST">
+					<div class = "book-form">
+						<label class ="book-label"><%= availableTimes[i].start_time + " - " + availableTimes[i].end_time%> </label>
 						<input type="hidden" name="id" value = "<%= availableTimes[i].appointment_id %>">
-						<input type="submit" class="uk-button uk-button-success" value = "Book this appointment">
+						<input type="submit" class="uk-button uk-button-success book-time" value = "Book this appointment">
 					</div>
 				</form>
 		<% }%>

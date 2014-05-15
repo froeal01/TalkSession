@@ -1,14 +1,17 @@
+<% include ../shared/client_navbar %>
+
+
 <div class="uk-grid">
-	<div class = "uk-width-1-2">
+	<div class = "uk-width-2-4">
 		<div id="calendar"></div>
 	</div>
-	<div class = "uk-width-1-2 next-session-div">
+	<div class = "uk-width-1-4 next-session-div">
 		<h3> Next Session </h3>
 		<% for(var i=0; i < dashInfo.confirmedAppointments.length; i++){ %>
 				<p><%= dashInfo.confirmedAppointments[i].appointment_date + " " + dashInfo.confirmedAppointments[i].start_time + " - " + dashInfo.confirmedAppointments[i].end_time %></p>
 		<% } %>
 	</div>
-	<div class = "uk-width-1-1 pending-times">
+	<div class = "uk-width-1-4">
 		<h3> Times pending confirmation </h3>
 		<% if (dashInfo.pendingAppointments.length > 0) {%>
 			<% for(var i=0; i < dashInfo.pendingAppointments.length; i++){ %>

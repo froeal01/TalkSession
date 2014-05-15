@@ -20,6 +20,10 @@
 	display: none;
 }
 
+.login-button{
+	margin-left:25px;
+}
+
 .uk-navbar{
 	margin-bottom: 10px;
 }
@@ -28,7 +32,108 @@
 	height:50%;
 }
 
+.index-writing{
+	color: white !important;
+}
+
+.email{
+	margin-right: 29px;
+}
+
 .pending-times{
 	margin-left: 65%;
 	float:top;
+}
+
+.client-name{
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.contact{
+	margin-right: 10px;
+}
+
+.archive{
+	margin-top: 50px;
+	text-align: center;
+}
+
+#time-submit{
+	margin-top: 20px;
+}
+
+.check-time{
+	text-align: center;
+	margin-bottom: 15px;
+}
+.search{
+	text-align: center;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+.search-field{
+	 height: 30px;
+  /* 2 */
+  max-width: 100%;
+  /* 3 */
+  padding: 4px 6px;
+  /* 4 */
+  border: 1px solid #dddddd;
+  background: #ffffff;
+  color: #444444;
+  -webkit-transition: all linear 0.2s;
+  transition: all linear 0.2s;
+}
+
+.search-field:focus{
+ border-color: #99baca;
+  outline: 0;
+  background: #f5fbfe;
+  color: #444444;
+}
+
+.quick-button{
+	margin-right: 5px;
+}
+
+.appointment-times{
+	display:none;
+}
+
+.available-times-header{
+	text-align: center;
+}
+
+.book-form{
+	text-align: center;
+	margin-top: 20px;
+	width:100%;
+}
+
+.book-time{
+	margin-left: 20px;
+}
+
+.index-page{
+	background-color: red;
+	height: 5%;
+	width: 100%;
+}
+
+.slide-out-div{
+	height:100%;
+	width:10%;
+}
+
+.img-holder{
+	background-image: url('../images/calendar.jpg');
+	background-repeat: no-repeat;
+	background-size:1645px 800px;
+	height:800px;
+	 -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
 }

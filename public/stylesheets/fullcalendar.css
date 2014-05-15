@@ -102,6 +102,7 @@ html .fc,
 	
 .fc-content {
 	clear: both;
+	height: 75% !important;
 	zoom: 1; /* for IE7, gives accurate coordinates for [un]freezeContentHeight */
 	}
 	
