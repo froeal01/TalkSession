@@ -48,10 +48,24 @@ exports.monthlyslots = function (req,res){
 	});
 }
 
-exports.confirmation = function(req,res){
-	res.render('events/confirmation');
+exports.decline = function(req,res){
+	Appointment.declineAppointment(req.body.data, function(err,results){
+		if(err){
+			res.send({message: "Something Went Wrong!"});
+		}
+		res.send();
+	});
 }
 
+exports.accept = function(req,res){
+	Appointment.acceptAppointment(req.body.data, function(err,results){
+		if(err){
+			res.send({message: "Something Went Wrong!"});
+			res.end();
+		}
+		res.send();
+	})
+}
 
 
 

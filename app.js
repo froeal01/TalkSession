@@ -52,7 +52,8 @@ app.get('/events/:date', userAuth, events.show);
 app.post('/events/:date', userAuth, events.update);
 app.post('/dailyschedule', adminAuth, events.dailyschedule);
 app.post('/timeslots', userAuth, events.monthlyslots);
-
+app.post('/decline-appointment',adminAuth, events.decline);
+app.post('/accept-appointment',adminAuth, events.accept);
 
 // sessions
 app.post('/', sessions.create);

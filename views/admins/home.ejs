@@ -1,4 +1,7 @@
 <% include ../shared/admin_navbar %>
+<div class = "message-field-success uk-alert uk-alert-success"></div>
+<div class = "message-field-fail uk-alert uk-alert-danger"></div>
+
 <div class = "uk-grid">
 	<div class = "uk-width-1-3">
 		<div class = "uk-pannel uk-panel-box uk-panel-box-secondary">
@@ -25,8 +28,8 @@
 					<div><p><%= dashboard.appointmentConfirms[i].client_name + " " + dashboard.appointmentConfirms[i].appointment_date +
 						" " + dashboard.appointmentConfirms[i].start_time + " - " + dashboard.appointmentConfirms[i].end_time%></p>
 
-						<button value="<%=dashboard.appointmentConfirms[i].client_email%>", class="uk-button uk-button-primary confirm-yes"> Confirm,Yes?</button>
-						<button value="<%=dashboard.appointmentConfirms[i].client_email%>", class="uk-button uk-button-danger confirm-no"> Confirm, No?</button>
+						<button value="<%=dashboard.appointmentConfirms[i].appointment_id %>", class="uk-button uk-button-primary confirm-yes confirmer"> Confirm,Yes?</button>
+						<button value="<%=dashboard.appointmentConfirms[i].appointment_id %>"	, class="uk-button uk-button-danger confirm-no confirmer"> Confirm, No?</button>
 					</div>
 				<% } %>
 			<% } else { %>
@@ -48,16 +51,33 @@
 <script>
 	$(function(){
 
+		// Listeners on Page
+
 		$(".confirm-no").on('click',function(e){
 			e.preventDefault;
-			console.log(this);
+			$('.confirmer').attr('disabled',true);
+			var buttonClicked = this;
+			var apptId = $(this).val();
+			declineAppointment(apptId,buttonClicked,handleResponse);
 		});
 
+		$(".confirm-yes").on('click',function(e){
+			e.preventDefault;
+			console.log(this)
+			$('.confirmer').attr('disabled',true);
+			var buttonClicked = this;
+			var apptId = $(this).val();
+			acceptAppointment(apptId,buttonClicked,handleResponse);
+		});
 
-		var date = null
-		$.post('/dailyschedule', function(data){
+	
+	// Ajax request to fill calendar info
+
+	function fillEvents(date){
+		$.post('/dailyschedule',{dateToInquiry:date} ,function(data){
 				var dailyTimes = $.map(data.times, function(session){ //deal with error of not being able to display calendar 
 					// when no appointments are available.
+					console.log(session)
 					return {
 				 						id : session.appointment_id,
 				 						start : prettifyDate(session.appointment_date,session.start_time),
@@ -70,16 +90,46 @@
 						defaultView:'agendaDay',
 		 				events: dailyTimes
 					});
+			});
+		};		
+
+	function prettifyDate(date,time){
+		var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/)
+		return formattedDate[1] + " " + time
+	}	
+
+	
+	//helper functions
+
+	function declineAppointment(apptId,buttonClicked,cb){
+		$.post('/decline-appointment',{data:apptId},function(data){
+			if(data){
+				cb(data);
+			}
+			cb(null,buttonClicked);
 		});
-			
-		function prettifyDate(date,time){
-			var formattedDate = date.match(/^(\d{4}-\d\d-\d\d)/)
-			return formattedDate[1] + " " + time
-		}	
+	}
 
-		
+	function acceptAppointment(apptId,buttonClicked,cb){
+		$.post('/accept-appointment',{data:apptId},function(data){
+			if(data){
+				cb(data);
+			}
+			cb(null,buttonClicked);
+		})
+	}
 
+	var handleResponse = function(err,updated){
+		if(err){
+			$('.message-field-fail').html(err.message).show();
+			$('.confirmer').attr('disabled',false);
+		} else{
+			$('.message-field-success').html("Confirmed").show();
+			$(updated).parent().hide();
+			$('.confirmer').attr('disabled',false);
+		}
+	}
 
-
+	fillEvents();	
  });
 </script>

@@ -104,17 +104,10 @@ User.prototype.authenticate = function(password){
 	return this.password === password;
 }
 
-User.prototype.bookAppointment = function(appointmentId,cb){
+User.prototype.bookAppointment = function(appointmentId,callback){
 	var userId = this.userId;
-	var query = 'INSERT INTO users_appointments_join (user_id, appointment_id, created_at) VALUES($1,$2,to_timestamp($3)'
-	var params = [parseInt(userId),parseInt(appointmentId)]
-
-	helper.dbCall(query,params,function(err,results){
-		if(err){
-			cb(err);
-		}else{
-			cb();
-		}
+	helper.dbCall('INSERT INTO users_appointments_join (user_id, appointment_id, created_at) VALUES($1,$2,to_timestamp($3))',[parseInt(userId),parseInt(appointmentId),Date.now()],function(err,results){
+		callback(err,results)
 	});
 }
 

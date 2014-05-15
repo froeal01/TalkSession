@@ -13,6 +13,12 @@
 .message-field{
 	display: none;
 }
+.message-field-success{
+	display: none;
+}
+.message-field-fail{
+	display: none;
+}
 
 .uk-navbar{
 	margin-bottom: 10px;
