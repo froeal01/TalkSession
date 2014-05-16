@@ -64,9 +64,13 @@
 
 		// set global variable for date
 		 var date = new Date();
-
+		 // var dailyTimes = {};
 		 // initial calendar
-
+		 // $(".day-calendar").fullCalendar({
+			// 			defaultView:'agendaDay',
+			// 			contentHeight: 600,
+		 // 				// events: dailyTimes
+			// 		});
 		 
 		// Listeners on Page
 
@@ -97,48 +101,54 @@
 
 	function setNextButton(){
 		$(".fc-button-next").on('click',function(){
+			alert('here')
 				moveForwardDay();
 		});
 	}
 
 	function setPrevButton(){
 		$(".fc-button-prev").on('click',function(){
+				console.log('here');
 			moveBackDay();
 		});
 	}
 
 	function setTodayButton(){
 		$(".fc-button-today").on('click',function(){
+				console.log('here');
 			resetDate();
 		});
 	}
 	// Ajax request to fill calendar info
 
 	function fillEvents(niceDate){
-		$.post('/dailyschedule',{dateToInquiry:niceDate} ,function(data){
-				var dailyTimes = $.map(data.times, function(session){ //deal with error of not being able to display calendar 
-					// when no appointments are available.
-					console.log(session)
-					return {
-				 						id : session.appointment_id,
-				 						start : prettifyDate(session.appointment_date)+ " " + session.start_time,
-				 						end : prettifyDate(session.appointment_date)+ " " + session.end_time,
-				 						title : session.client_name == null ? "Open Slot" : session.client_name,
-				 						allDay : false
-		 						}
-				})
-					$(".day-calendar").fullCalendar({
-						defaultView:'agendaDay',
-						contentHeight: 600,
-		 				events: dailyTimes
-					});
-				console.log(date);
-				console.log(dailyTimes);
-			// setNextButton();
-			// setPrevButton();
-			// setTodayButton();  //change these to switch statement and only have one 
-			});
-		};		
+		$.ajax({
+			type: "POST",
+			url: "/dailyschedule",
+			data:{
+				dateToInquiry: niceDate
+			},
+			success: function(data){
+				console.log(data)
+				$('.day-calendar').fullCalendar({
+					defaultView:'agendaDay',
+					contentHeight: 600,
+					events:
+					 $.map(data.times, function(session){
+					 	   	var event = new Object();
+								event.id = session.appointment_id;
+				 				event.start = prettifyDate(session.appointment_date)+ " " + session.start_time;
+				 				event.end = prettifyDate(session.appointment_date)+ " " + session.end_time;
+				 				event.title = session.client_name == null ? "Open Slot" : session.client_name;
+				 				event.allDay = false;
+					return event;
+		     })
+				});
+			}
+		});
+		setListners();
+	}
+				
 
 
 	function prettifyDate(date){
@@ -147,6 +157,10 @@
 	  }		
 	
 	//helper functions
+
+	// function setListners(){
+	// 	setNextButton();
+	// }
 
 	function moveForwardDay(){
 		date.setDate(date.getDate() + 1)
