@@ -45,9 +45,9 @@ User.getAdminDashboard = function(adminId,cb) { //admin id passed for when multi
 
 function getClientConfirmedAppointment(adminId,callback){
 	
-	helper.dbCallAllRows("select DISTINCT ON(client_email) client_email, to_char(appointment_date,'Day, Month DD YYYY') as appointment_date, client_name, to_char(start_time, 'HH12:MI:SS:am') as start_time,to_char(end_time, 'HH12:MI:SS:am') as end_time "+
-		 "FROM appointments WHERE appointment_date > now() AND confirmed = true "+
-		  "ORDER BY client_email,appointment_date, client_name, start_time, end_time ASC;",[],App,function(err,confirmed){
+	helper.dbCallAllRows("select * FROM(SELECT DISTINCT ON(client_email) client_name, to_char(appointment_date, 'Day, Month DD YYYY') as appointment_date, to_char(start_time,'HH12:MI:SS:am') as start_time, to_char(end_time,'HH12:MI:SS:am') as end_time " +  
+		"FROM appointments WHERE appointment_date >= now() AND confirmed = true ORDER BY client_email) AS aptdates " + 
+    "ORDER BY appointment_date;",[],App,function(err,confirmed){
 		  	callback(err,confirmed);
 		  });
 }

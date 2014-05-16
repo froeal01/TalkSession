@@ -101,21 +101,21 @@
 
 	function setNextButton(){
 		$(".fc-button-next").on('click',function(){
-			alert('here')
-				moveForwardDay();
+				$('.day-calendar').fullCalendar('refetchEvents',fillEvents("2014-05-17"));	
+
+				// moveForwardDay();
+
 		});
 	}
 
 	function setPrevButton(){
 		$(".fc-button-prev").on('click',function(){
-				console.log('here');
 			moveBackDay();
 		});
 	}
 
 	function setTodayButton(){
 		$(".fc-button-today").on('click',function(){
-				console.log('here');
 			resetDate();
 		});
 	}
@@ -129,7 +129,6 @@
 				dateToInquiry: niceDate
 			},
 			success: function(data){
-				console.log(data)
 				$('.day-calendar').fullCalendar({
 					defaultView:'agendaDay',
 					contentHeight: 600,
@@ -142,11 +141,13 @@
 				 				event.title = session.client_name == null ? "Open Slot" : session.client_name;
 				 				event.allDay = false;
 					return event;
-		     })
+		     }),
+				eventAfterAllRender: function (view){
+					// setListners();
+				}
 				});
 			}
 		});
-		setListners();
 	}
 				
 
@@ -158,9 +159,9 @@
 	
 	//helper functions
 
-	// function setListners(){
-	// 	setNextButton();
-	// }
+	function setListners(){
+		setNextButton();
+	}
 
 	function moveForwardDay(){
 		date.setDate(date.getDate() + 1)
@@ -179,8 +180,6 @@
 
 	function sendDate(date){
 		var sendableDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-		console.log(sendableDate);
-
 		fillEvents(sendableDate);
 	}
 
